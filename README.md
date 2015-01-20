@@ -1,5 +1,6 @@
 # VBA.CVRAPI
 A complete collection of VBA modules and functions to call the CVRAPI using JavaScript.
+Tested with Microsoft Access 2013.
 
 As a minimum, these modules are needed:
    CvrService
@@ -7,7 +8,7 @@ As a minimum, these modules are needed:
    JsonScript
    JsonService
 
-Also, in function CvrLookup, don't forget to adjust the application specific constants UserAgentOrg and UserAgentApp
+Also, in function CvrLookup, don't forget to adjust the application specific constants UserAgentOrg and UserAgentApp.
 
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 2015-01-20.
