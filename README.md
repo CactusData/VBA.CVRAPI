@@ -7,10 +7,7 @@ As a minimum, these modules are needed:
    JsonScript
    JsonService
 
-Also, in function CvrLookup, don't forget to adjust the application specific constants:
-
-   UserAgentOrg      As String = "Anonymous"         ' Your organisation.
-   UserAgentApp      As String = "Test"              ' Your app name
+Also, in function CvrLookup, don't forget to adjust the application specific constants UserAgentOrg and UserAgentApp
 
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 2015-01-20.
