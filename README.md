@@ -9,8 +9,8 @@ As a minimum, these modules are needed:
 
 Also, in function CvrLookup, don't forget to adjust the application specific constants:
 
-'   UserAgentOrg      As String = "Anonymous"         ' Your organisation.
-'   UserAgentApp      As String = "Test"              ' Your app name.
+   UserAgentOrg      As String = "Anonymous"         ' Your organisation.
+   UserAgentApp      As String = "Test"              ' Your app name
 
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 2015-01-20.
