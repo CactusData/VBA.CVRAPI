@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.0.0
+' CvrService v1.0.1
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -26,7 +26,7 @@ Public Enum CvrCountryKey
 End Enum
 
 Public Enum CvrFormatKey
-    Format
+    DataFormat
 End Enum
     
 Public Enum CvrVersionKey
@@ -175,7 +175,7 @@ Public Function CvrLookup( _
     
     ' Constants for this procedure.
     Const CountryKey        As Long = CvrCountryKey.Country
-    Const FormatKey         As Long = CvrFormatKey.Format
+    Const FormatKey         As Long = CvrFormatKey.DataFormat
     Const VersionKey        As Long = CvrVersionKey.Version
     ' First (only) item in error message collection.
     Const RootItem          As Integer = 1
