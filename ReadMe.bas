@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.0.1
+' VBA CVRAPI v1.0.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -24,3 +24,5 @@ Attribute VB_Name = "ReadMe"
 '
 ' 2015-01-20.
 ' 2015-02-24 Enum CvrFormatKey.Format changed to CvrFormatKey.DataFormat to not collide with VBA function Format.
+' 2015-04-02 CvrService.FormatCompany expanded to proper case company names like: "Company v/First Last".
+'            Added demo functions GetCvrVat and RetrieveCvrVat.
