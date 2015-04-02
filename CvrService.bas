@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.0.1
+' CvrService v1.0.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -558,7 +558,7 @@ Public Function FormatCompany( _
     
     CompanyTypes() = Array("AmbA", "A.m.b.A", "ApS", "AS", "A/S", "I/S", "IVS", "K/S", "P/S")
     
-    ProperCompany = StrConv(Company, vbProperCase)
+    ProperCompany = Replace(StrConv(Replace(Company, "v/", "¤v/ "), vbProperCase), "¤v/ ", "v/")
     
     For Index = LBound(CompanyTypes) To UBound(CompanyTypes)
         If Left(ProperCompany, Len(CompanyTypes(Index)) + 1) = CompanyTypes(Index) & " " Then
@@ -932,3 +932,4 @@ Private Function CvrError( _
     Set CvrError = CollectJson(ResponseText)
     
 End Function
+
