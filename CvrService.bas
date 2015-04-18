@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.0.2
+' CvrService v1.0.3
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -223,10 +223,15 @@ Public Function CvrLookup( _
             ServiceUrl = BuildServiceUrl(, Host, Path, Query)
             ' Retrieve data.
             Set DataCollection = RetrieveDataCollection(ServiceUrl, UserAgent)
-            If DataCollection(RootItem)(CollectionItem.Data).Count > ErrorItems Then
-                Result = True
+            If DataCollection Is Nothing Then
+                ' CVRAPI service is not available.
+                ' Has your IP been blocked?
             Else
-                ' Error message returned.
+                If DataCollection(RootItem)(CollectionItem.Data).Count > ErrorItems Then
+                    Result = True
+                Else
+                    ' Error message returned.
+                End If
             End If
         Else
             ' Search data didn't validate.
