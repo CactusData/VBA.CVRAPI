@@ -173,3 +173,37 @@ Public Function IsCvr( _
     IsCvr = RetrieveCvrAddress(Country, VAT, "", "", "", "")
     
 End Function
+
+' Basic top-level example function to retrieve a full set of data
+' typically from a search by VAT number or company name.
+'
+' Returns the UDT (User Defined Type) CvrVat.
+'
+' Example:
+'   Dim CvrVatResult As CvrVat
+'   Dim Result       As Boolean
+'   CvrVatResult = GetCvrData(CvrSearchKey.CompanyName, "TheUniqueCompanyName", Result)
+' returns full info in CvrVatResult.
+'
+Public Function GetCvrData( _
+    ByVal SearchKey As CvrSearchKey, _
+    ByVal SearchValue As String, _
+    ByRef Result As Boolean) _
+    As CvrVat
+
+    Dim DataCollection      As Collection
+    Dim FullResult          As CvrVat
+    
+    Set DataCollection = CvrLookup(Result, SearchKey, SearchValue, CvrCountrySelect.Denmark)
+    
+    If Result = True Then
+        ' Success.
+        ' Purify data.
+        FullResult = FillType(DataCollection)
+    End If
+    
+    Set DataCollection = Nothing
+    
+    GetCvrData = FullResult
+
+End Function
