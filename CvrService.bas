@@ -165,8 +165,8 @@ Public Function CvrLookup( _
     As Collection
 
     ' Application specific constants.
-    Const UserAgentOrg      As String = "Anonymous"         ' Your organisation.
-    Const UserAgentApp      As String = "Test"              ' Your app name.
+    Const UserAgentOrg      As String = "Min organisation"  ' Your organisation.
+    Const UserAgentApp      As String = "Mit projekt"       ' Your app name.
     
     ' API specific constants.
     Const Host              As String = "cvrapi.dk"         ' Do not change.
