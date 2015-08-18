@@ -21,4 +21,4 @@ Also, in function CvrLookup, don't forget to adjust the application specific con
 
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 
-2015-04-02.
+2015-08-18.
