@@ -1,5 +1,9 @@
 # VBA.CVRAPI
-A complete collection of VBA modules and functions to call the CVRAPI using JavaScript.
+A complete collection of VBA modules and functions to call the CVRAPI using JavaScript at:
+
+   http://cvrapi.dk
+   
+   http://cvrapi.dk/documentation
 
 Tested with Microsoft Access 2013.
 
