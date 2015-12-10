@@ -16,9 +16,13 @@ As a minimum, these modules are needed:
    JsonScript
 
    JsonService
+   
+and in Word/Excel also:
+
+   CvrUtil
 
 Also, in function CvrLookup, don't forget to adjust the application specific constants UserAgentOrg and UserAgentApp.
 
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 
-2015-08-18.
+2015-12-10.
