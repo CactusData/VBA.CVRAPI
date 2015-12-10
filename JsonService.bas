@@ -10,7 +10,7 @@ Attribute VB_Name = "JsonService"
 '
 ' Requires: A reference to "Microsoft XML, v6.0".
 '
-Option Compare Database
+Option Compare Text
 Option Explicit
 
 ' Build a URL string from its components to call a service.
@@ -137,7 +137,7 @@ Public Function RetrieveDataResponse( _
     ' ServiceUrl is expected to have URL encoded parameters.
     
     ' User defined constants.
-    Const DefaultUserAgent  As String = "Anonymous - Test"
+    Const DefaultUserAgent  As String = "Min organisation - Mit projekt"
     ' Fixed constants.
     Const Async             As Boolean = False
     Const StatusOk          As Integer = 200
