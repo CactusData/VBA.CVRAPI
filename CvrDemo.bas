@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrDemo"
-Option Compare Database
+Option Compare Text
 Option Explicit
 '
 ' Example functions for using CVRAPI at application level.
