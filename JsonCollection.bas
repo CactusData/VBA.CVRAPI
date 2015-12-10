@@ -2,7 +2,7 @@ Attribute VB_Name = "JsonCollection"
 ' Set of low-level functions to retrieve and decode data from a Json service
 ' and return these as a data collection.
 '
-Option Compare Database
+Option Compare Text
 Option Explicit
 
 ' Decode a Json response text and convert it to a collection of arrays.
