@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.0.3
+' CvrService v1.1.0
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -7,7 +7,7 @@ Attribute VB_Name = "CvrService"
 '
 ' License: MIT (http://opensource.org/licenses/mit-license.php)
 '
-Option Compare Database
+Option Compare Text
 Option Explicit
 
 
@@ -44,13 +44,14 @@ Public Enum CvrFormatSelect
 End Enum
 
 Public Enum CvrVersionSelect
-    Newest
+    Version0
     Version1
     Version2
     Version3
     Version4
     Version5
     Version6
+    Newest
 End Enum
 
 Public Enum CvrPnoCodeLength
@@ -104,7 +105,7 @@ Public Type CvrProductionunit
 End Type
 
 Public Type CvrVat
-    Vat             As Long
+    VAT             As Long
     Name            As String
     Address         As String
     ZipCode         As String
@@ -165,8 +166,8 @@ Public Function CvrLookup( _
     As Collection
 
     ' Application specific constants.
-    Const UserAgentOrg      As String = "Min organisation"  ' Your organisation.
-    Const UserAgentApp      As String = "Mit projekt"       ' Your app name.
+    Const UserAgentOrg      As String = "Cactus Data ApS"  ' Your organisation.
+    Const UserAgentApp      As String = "Accesstest"       ' Your app name.
     
     ' API specific constants.
     Const Host              As String = "cvrapi.dk"         ' Do not change.
@@ -399,7 +400,7 @@ Public Function FillTypeVat( _
                 FieldValue = DataCollection(Item)(CollectionItem.Data)
                 Select Case FieldName
                     Case "vat"
-                        TypeVat.Vat = FieldValue
+                        TypeVat.VAT = FieldValue
                     Case "name"
                         TypeVat.Name = FormatCompany(Nz(FieldValue))
                     Case "address"
@@ -701,7 +702,7 @@ Private Function CvrFormatValue( _
     
     Dim Values()            As Variant
     
-    Values() = Array("Json", "Xml")
+    Values() = Array("json", "xml")
 
     CvrFormatValue = Values(CvrKey)
 
@@ -715,12 +716,31 @@ Private Function CvrVersionValue( _
     
     Dim VersionValue        As String
     
-    If CvrKey = Newest Then
-        ' Value 0 of Newest is not a valid parameter value.
-        ' Return an empty string.
-    Else
-        VersionValue = CStr(CvrKey)
-    End If
+'    ' 2015-12-10.
+'    ' Value 0 is now valid but does NOT return the newest version.
+'
+'    If CvrKey = Newest Then
+'        ' Value 0 of Newest is not a valid parameter value.
+'        ' Return an empty string.
+'    Else
+'        VersionValue = CStr(CvrKey)
+'    End If
+
+    ' Verify version.
+    Select Case CvrKey
+        ' Allowed versions.
+        Case Newest
+            ' Change to newest version as expected.
+            CvrKey = Version6
+        Case Version4
+        Case Version5
+        Case Version6
+        Case Else
+            ' Change disallowed versions to newest.
+            CvrKey = Version6
+    End Select
+    
+    VersionValue = CStr(CvrKey)
     
     CvrVersionValue = VersionValue
 
@@ -937,4 +957,3 @@ Private Function CvrError( _
     Set CvrError = CollectJson(ResponseText)
     
 End Function
-
