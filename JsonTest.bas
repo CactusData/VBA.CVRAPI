@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonTest"
-Option Compare Database
+Option Compare Text
 Option Explicit
 '
 ' Functions for simple testing and listing of retrieved
@@ -19,12 +19,13 @@ Public Sub TestJsonService()
     Const App_id            As String = "b492b663ae3e458d9f0b042e8edb8c63"
     
     ' Register at http://www.geonames.org/login
-    ServiceUrl = "http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=" & Username
+    'ServiceUrl = "http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=" & Username
     
     ' Register at https://openexchangerates.org/signup/free
     'ServiceUrl = "http://openexchangerates.org/api/latest.json?app_id=" & App_id
     
-    'ServiceUrl = "http://cvrapi.dk/api?name=lagkagehuset&country=dk&format=json"
+'    ServiceUrl = "http://cvrapi.dk/api?name=lagkagehuset&country=dk&format=json&version=0"
+    ServiceUrl = "http://cvrapi.dk/api?vat=12002696&country=dk&format=json&version=4"
     UserAgent = "Example Org. - TestApp"
     
     If RetrieveDataResponse(ServiceUrl, ResponseText, UserAgent) = True Then
