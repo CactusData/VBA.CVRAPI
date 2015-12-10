@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.0.3
+' VBA CVRAPI v1.1.0
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -34,3 +34,15 @@ Attribute VB_Name = "ReadMe"
 ' 2015-04-18 Default User-agent changed as described above.
 '            Error "Service not available" (likely a IP address blocking) handled in CvrLookup.
 '            GetCvrData added in CvrDemo. Returns a filled instance of UDT CvrVat.
+' 2015-12-10 Version 0 is now allowed while Version as an empty string is not allowed.
+'            Further, version 0 does not return the newest version.
+'            Function CvrVersionValue modified to reflect this and validate version.
+'
+'            Format parameter cannot be mixed case.
+'            Function CvrFormatValue modified to create lowercase format values.
+'
+'            Function RetrieveDataResponse, DefaultUserAgent changed to: "Min organisation - Mit projekt".
+'
+'            Option Compare Database changed to Option Compare Text for compatibility with Word/Excel.
+'
+'            Added module CvrUtil with function Nz for use in Word/Excel where Application.Nz is missing.
