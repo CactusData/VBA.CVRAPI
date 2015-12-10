@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrDebug"
-Option Compare Database
+Option Compare Text
 Option Explicit
 '
 ' Functions for simple testing and listing of retrieved
@@ -27,10 +27,10 @@ Public Sub ListCvr( _
     Else
         ' Normal data collection received.
         ' Fill (partly) user defined type.
-        TypeCvrVat.Vat = DataCollection(RootItem)(CollectionItem.Data)("vat")(CollectionItem.Data)
+        TypeCvrVat.VAT = DataCollection(RootItem)(CollectionItem.Data)("vat")(CollectionItem.Data)
         TypeCvrVat.Name = DataCollection(RootItem)(CollectionItem.Data)("name")(CollectionItem.Data)
         ' List two basic fields.
-        Debug.Print "VAT:", CStr(TypeCvrVat.Vat)
+        Debug.Print "VAT:", CStr(TypeCvrVat.VAT)
         Debug.Print "Name:", TypeCvrVat.Name
     End If
     
@@ -101,7 +101,7 @@ Public Function TestCvr() As Boolean
     If Result = True Then
         ' Success.
         FullResult = FillType(DataCollection)
-        Debug.Print FullResult.Vat, FullResult.Name
+        Debug.Print FullResult.VAT, FullResult.Name
     Else
         ' Error.
         FullError = FillError(DataCollection)
