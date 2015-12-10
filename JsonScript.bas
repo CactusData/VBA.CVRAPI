@@ -9,7 +9,7 @@ Attribute VB_Name = "JsonScript"
 '
 ' Requires: A reference to "Microsoft Script Control 1.0".
 '
-Option Compare Database
+Option Compare Text
 Option Explicit
 
 ' Script engine to run JavaScript (Microsoft JScript).
