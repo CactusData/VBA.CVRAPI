@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.1.0
+' VBA CVRAPI v1.1.1
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -46,3 +46,4 @@ Attribute VB_Name = "ReadMe"
 '            Option Compare Database changed to Option Compare Text for compatibility with Word/Excel.
 '
 '            Added module CvrUtil with function Nz for use in Word/Excel where Application.Nz is missing.
+' 2016-04-13 CvrDemo.GetCvrDate expanded to take country code as an optional parameter.
