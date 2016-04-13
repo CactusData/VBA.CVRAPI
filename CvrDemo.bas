@@ -188,13 +188,14 @@ End Function
 Public Function GetCvrData( _
     ByVal SearchKey As CvrSearchKey, _
     ByVal SearchValue As String, _
-    ByRef Result As Boolean) _
+    ByRef Result As Boolean, _
+    Optional ByVal CountryValue As CvrCountrySelect = CvrCountrySelect.Denmark) _
     As CvrVat
 
     Dim DataCollection      As Collection
     Dim FullResult          As CvrVat
     
-    Set DataCollection = CvrLookup(Result, SearchKey, SearchValue, CvrCountrySelect.Denmark)
+    Set DataCollection = CvrLookup(Result, SearchKey, SearchValue, CountryValue)
     
     If Result = True Then
         ' Success.
