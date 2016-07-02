@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonService"
-' JsonService v1.0.0
+' JsonService v1.1.1
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -178,7 +178,10 @@ Public Function RetrieveDataResponse( _
             End If
     End Select
     If Result = False Then
-        ResponseText = CStr(XmlHttp.status) & ": " & XmlHttp.statusText
+        If ResponseText = "" Then
+            ResponseText = XmlHttp.statusText
+        End If
+        ResponseText = CStr(XmlHttp.status) & ":" & vbCrLf & ResponseText
     End If
     
     RetrieveDataResponse = Result
