@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.1.0
+' CvrService v1.1.1
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -72,11 +72,6 @@ End Enum
 Public Enum CvrVatFirstDigitMin
     Dk = 1
     No = 8
-End Enum
-
-Public Enum CollectionItem
-    Name = 0
-    Data = 1
 End Enum
 
 ' User defined data types.
