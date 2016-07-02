@@ -5,6 +5,11 @@ Attribute VB_Name = "JsonCollection"
 Option Compare Text
 Option Explicit
 
+Public Enum CollectionItem
+    Name = 0
+    Data = 1
+End Enum
+
 ' Decode a Json response text and convert it to a collection of arrays.
 '
 Public Function CollectJson( _
