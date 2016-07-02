@@ -5,7 +5,7 @@ A complete collection of VBA modules and functions to call the CVRAPI using Java
    
    http://cvrapi.dk/documentation
 
-Tested with Microsoft Access 2013.
+Tested with Microsoft Access/Excel 2013/2016
 
 As a minimum, these modules are needed:
 
