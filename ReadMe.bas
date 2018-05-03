@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.1.1
+' VBA CVRAPI v1.2.0
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -47,3 +47,7 @@ Attribute VB_Name = "ReadMe"
 '
 '            Added module CvrUtil with function Nz for use in Word/Excel where Application.Nz is missing.
 ' 2016-04-13 CvrDemo.GetCvrDate expanded to take country code as an optional parameter.
+' 2018-05-02 Module JsonScript updated to be able to run in 64-bit VBA as well.
+'            For 64-bit, third-party script control must be installed separately from:
+'               https://tablacus.github.io/scriptcontrol_en.html
+'            Module CvrUtil renamed to Access, as it is for use in Excel only.
