@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.1.1
+' CvrService v1.1.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -372,6 +372,8 @@ End Function
 
 ' Converts and cleans one item of a sub collection to user defined type CvrVat.
 '
+' 2018-05-15: Wrapped TypeVat.Creditbankrupt value in Nz().
+'
 Public Function FillTypeVat( _
     ByVal DataCollection As Collection) _
     As CvrVat
@@ -433,7 +435,7 @@ Public Function FillTypeVat( _
                     Case "creditstatus"
                         TypeVat.Creditstatus = Nz(FieldValue, 0)
                     Case "creditbankrupt"
-                        TypeVat.Creditbankrupt = FieldValue
+                        TypeVat.Creditbankrupt = Nz(FieldValue, 0)
                     Case "t"
                         TypeVat.T = Nz(FieldValue, 0)
                     Case "version"
@@ -559,7 +561,7 @@ Public Function FormatCompany( _
     
     CompanyTypes() = Array("AmbA", "A.m.b.A", "ApS", "AS", "A/S", "I/S", "IVS", "K/S", "P/S")
     
-    ProperCompany = Replace(StrConv(Replace(Company, "v/", "Â¤v/ "), vbProperCase), "Â¤v/ ", "v/")
+    ProperCompany = Replace(StrConv(Replace(Company, "v/", "¤v/ "), vbProperCase), "¤v/ ", "v/")
     
     For Index = LBound(CompanyTypes) To UBound(CompanyTypes)
         If Left(ProperCompany, Len(CompanyTypes(Index)) + 1) = CompanyTypes(Index) & " " Then
@@ -952,3 +954,4 @@ Private Function CvrError( _
     Set CvrError = CollectJson(ResponseText)
     
 End Function
+

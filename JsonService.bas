@@ -26,7 +26,7 @@ Public Function BuildServiceUrl( _
     As String
 
     Dim ServiceUrl          As String
-
+    
     ' Verify scheme.
     If Scheme = "" Then
         Scheme = "http"

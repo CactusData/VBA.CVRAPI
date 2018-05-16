@@ -101,7 +101,7 @@ End Function
 '   VAT:          20213094
 '   Company:      Lagkagehuset A/S
 '   Street:       Amerikavej 21
-'   City:         1756 KÃ¸benhavn V
+'   City:         1756 København V
 '
 Public Sub GetDkCompanyInfo( _
     ByVal VAT As String)
@@ -135,7 +135,7 @@ End Sub
 '   VAT:          33402996
 '   Company:      Nydata.dk v/Per Stenholt Andersen
 '   Street:       Roskildevej 278A, st. tv.
-'   City:         2610 RÃ¸dovre
+'   City:         2610 Rødovre
 
 Public Sub GetDkVat( _
     ByVal Company As String)
@@ -208,3 +208,5 @@ Public Function GetCvrData( _
     GetCvrData = FullResult
 
 End Function
+
+

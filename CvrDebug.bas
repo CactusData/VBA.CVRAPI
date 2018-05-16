@@ -37,25 +37,39 @@ Public Sub ListCvr( _
 End Sub
 
 ' List all field names of a received data collection from CVRAPI.
-' For production units, just list the count of these.
+' For "owners" and "productionunits", list the count of these as well as the content.
+'
+' 2018-05-15: Expanded to recursively list content of "owners" and "productionunits"
+'             and accept null for "owners"'s collection.
 '
 Public Sub ListCvrFields( _
-    ByVal DataCollection As Collection)
+    ByVal DataCollection As Collection, _
+    Optional ByVal SubIndex As Integer)
     
     Const RootItem          As Integer = 1
     
     Dim FieldName           As String
     Dim Item                As Integer
     Dim Items               As Integer
+    Dim SubItem             As Integer
+    Dim SubItems            As Integer
     
     Items = DataCollection(RootItem)(CollectionItem.Data).Count
     
     For Item = 1 To Items
         FieldName = DataCollection(RootItem)(CollectionItem.Data)(Item)(CollectionItem.Name)
-        Debug.Print Right(Str(Item), 2), FieldName, ;
-        If FieldName = "productionunits" Then
-            Debug.Print DataCollection(RootItem)(CollectionItem.Data)(Item)(CollectionItem.Data).Count
+        Debug.Print String(Sgn(SubIndex), vbTab) & Right(Str(Item), 2), FieldName, ;
+        
+        If IsObject(DataCollection(RootItem)(CollectionItem.Data)(Item)(CollectionItem.Data)) Then
+            ' This is a collection, either "owners" or "productionunits".
+            SubItems = DataCollection(RootItem)(CollectionItem.Data)(Item)(CollectionItem.Data).Count
+            Debug.Print SubItems
+            ' Call ListCvrFields recursively for each entry.
+            For SubItem = 1 To SubItems
+                ListCvrFields DataCollection(1)(CollectionItem.Data)(Item)(CollectionItem.Data), SubItem
+            Next
         Else
+            ' This is a field. Print its value.
             Debug.Print DataCollection(RootItem)(CollectionItem.Data)(Item)(CollectionItem.Data)
         End If
     Next
@@ -79,10 +93,10 @@ Public Function TestCvr() As Boolean
 '    Set DataCollection = CvrLookup(Result, CompanyName, "bergen", Norway)
 '    Set DataCollection = CvrLookup(Result, ProductionUnit, "986 326 146 ", Norway)
 '    Set DataCollection = CvrLookup(Result, VatNo, "886 300 352 ", Norway)
-    Set DataCollection = CvrLookup(Result, VatNo, "12002696", Denmark)
-'    Set DataCollection = CvrLookup(Result, ProductionUnit, "1000313698", Denmark)
+'    Set DataCollection = CvrLookup(Result, VatNo, "12002696", Denmark)
+    Set DataCollection = CvrLookup(Result, Productionunit, "1000313698", Denmark)
 '    Set DataCollection = CvrLookup(Result, CompanyName, "lagkage", Denmark)
-'    Set DataCollection = CvrLookup(Result, CompanyName, "YELLOW ADVERTISING NORWAY AS ", Norway)
+'    Set DataCollection = CvrLookup(Result, CompanyName, "YELLOW ADVERTISING NORWAY AS", Norway)
 '
 '   ' Will fail:
 '    Set DataCollection = CvrLookup(Result, PhoneNumber, "12002696", Denmark)
@@ -97,7 +111,7 @@ Public Function TestCvr() As Boolean
     ' First field (vat or error).
     Debug.Print DataCollection(1)(CollectionItem.Data)(1)(CollectionItem.Name)
     Debug.Print CStr(DataCollection(1)(CollectionItem.Data)(1)(CollectionItem.Data))
-        
+    
     If Result = True Then
         ' Success.
         FullResult = FillType(DataCollection)
@@ -117,3 +131,4 @@ Public Function TestCvr() As Boolean
     TestCvr = Result
 
 End Function
+

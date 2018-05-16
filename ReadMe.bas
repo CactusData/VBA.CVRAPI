@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.2.0
+' VBA CVRAPI v1.2.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -51,3 +51,7 @@ Attribute VB_Name = "ReadMe"
 '            For 64-bit, third-party script control must be installed separately from:
 '               https://tablacus.github.io/scriptcontrol_en.html
 '            Module CvrUtil renamed to Access, as it is for use in Excel only.
+' 2018-05-15 CvrDebug: ListCvrFields expanded to recursively list content of "owners" and "productionsunits"
+'            which also corrected a bug that caused an error if "owners" was null.
+'            CvrService: Wrapped TypeVat.Creditbankrupt value in Nz() to prevent error if value was null.
+
