@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.2.2
+' VBA CVRAPI v1.2.3
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -54,4 +54,4 @@ Attribute VB_Name = "ReadMe"
 ' 2018-05-15 CvrDebug: ListCvrFields expanded to recursively list content of "owners" and "productionsunits"
 '            which also corrected a bug that caused an error if "owners" was null.
 '            CvrService: Wrapped TypeVat.Creditbankrupt value in Nz() to prevent error if value was null.
-
+' 2018-06-01 Removed unused variables.

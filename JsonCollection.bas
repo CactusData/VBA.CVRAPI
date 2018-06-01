@@ -25,7 +25,7 @@ Public Function CollectJson( _
     Set col = New Collection
     Set JsonObject = DecodeJsonString(ResponseText)
     
-    Set col = FillCollection(JsonObject, CollectionName)
+    Set col = FillCollection(JsonObject)
     If VarType(col(1)(CollectionItem.Name)) <> vbObject Then
         ' Append the field collection to a root object.
         Set colRoot = New Collection
@@ -44,8 +44,7 @@ End Function
 ' Returns a collection of arrays of key/value pairs.
 '
 Private Function FillCollection( _
-    ByRef JsonObject As Object, _
-    Optional ByVal CollectionName As String) _
+    ByRef JsonObject As Object) _
     As Collection
     
     Dim col         As Collection
@@ -66,7 +65,7 @@ Private Function FillCollection( _
         KeyValue = GetProperty(JsonObject, Key)
         If InStr(KeyValue, "[object Object]") > 0 Then
             ' Subcollection.
-            col.Add Array(Key, FillCollection(GetObjectProperty(JsonObject, Key), Key)), Key
+            col.Add Array(Key, FillCollection(GetObjectProperty(JsonObject, Key))), Key
         Else
             ' Field value.
             col.Add Array(Key, KeyValue), Key

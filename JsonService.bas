@@ -208,7 +208,6 @@ Public Function RetrieveDataCollection( _
     Dim DataCollection      As Collection
     
     Dim ResponseText        As String
-    Dim Result              As Boolean
     
     If ServiceUrl <> "" Then
         If RetrieveDataResponse(ServiceUrl, ResponseText, UserAgent) = True Then
