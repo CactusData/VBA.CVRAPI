@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonScript"
-' JsonScript v1.2.0
+' JsonScript v1.2.1
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -70,20 +70,13 @@ Public Function GetKeys( _
     
     Dim Keys()      As String
     Dim Length      As Integer
-    Dim Index       As Integer
-    Dim Key         As Variant
 
     Set KeysObject = ScriptEngine.Run("getKeys", JsonObject)
 
     Length = GetProperty(KeysObject, "length")
-    ReDim Keys(Length - 1)
-
-' Runs in 32-bit but fails in 64-bit.
-''    For Each Key In KeysObject
-''        Keys(Index) = Key
-''        Index = Index + 1
-''    Next
-' However:
+    If Length > 0 Then
+        ReDim Keys(Length - 1)
+    End If
 
     ' KeysObject is just a comma separated string ...
     Keys = Split(KeysObject, ",")
@@ -94,17 +87,17 @@ End Function
 
 ' Get a property by name.
 '
-Public Function GetProperty(ByVal JsonObject As Object, ByVal propertyName As String) As Variant
+Public Function GetProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Variant
 
-    GetProperty = ScriptEngine.Run("getProperty", JsonObject, propertyName)
+    GetProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
 
 End Function
 
 ' Get a property as an object by name.
 '
-Public Function GetObjectProperty(ByVal JsonObject As Object, ByVal propertyName As String) As Object
+Public Function GetObjectProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Object
 
-    Set GetObjectProperty = ScriptEngine.Run("getProperty", JsonObject, propertyName)
+    Set GetObjectProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
 
 End Function
 

@@ -26,11 +26,13 @@ Public Function CollectJson( _
     Set JsonObject = DecodeJsonString(ResponseText)
     
     Set col = FillCollection(JsonObject)
-    If VarType(col(1)(CollectionItem.Name)) <> vbObject Then
-        ' Append the field collection to a root object.
-        Set colRoot = New Collection
-        colRoot.Add Array(CollectionName, col), CollectionName
-        Set col = colRoot
+    If Not col Is Nothing Then
+        If VarType(col(1)(CollectionItem.Name)) <> vbObject Then
+            ' Append the field collection to a root object.
+            Set colRoot = New Collection
+            colRoot.Add Array(CollectionName, col), CollectionName
+            Set col = colRoot
+        End If
     End If
     
     Set CollectJson = col
@@ -53,12 +55,17 @@ Private Function FillCollection( _
     Dim Key         As String
     Dim KeyValue    As Variant
     Dim Index       As Long
-    
-    Set col = New Collection
-    
+        
     ' Collect array of key and value of members of JsonObject recursively.
     ' Note: CollectionName is not implemented. Could be used for a tree build.
     Keys = GetKeys(JsonObject)
+
+    If LBound(Keys) <= UBound(Keys) Then
+        Set col = New Collection
+    Else
+        ' Empty array.
+        Set col = Nothing
+    End If
 
     For Index = LBound(Keys) To UBound(Keys)
         Key = Keys(Index)

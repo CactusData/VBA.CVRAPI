@@ -34,4 +34,4 @@ For *64-bit VBA*, a third-party dll, [*Tablacus Script Control 64*](https://tabl
 ### Implementation ###
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 
-2018-06-01.
+2018-09-25.

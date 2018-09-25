@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonService"
-' JsonService v1.1.1
+' JsonService v1.1.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
