@@ -1,5 +1,5 @@
 Attribute VB_Name = "Access"
-' Access v1.0.1
+' Access v1.0.2
 ' (c) 2018-05-01. Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/GustavBrock/VBA.Round
 '
@@ -29,15 +29,18 @@ End Function
 
 ' Replacement for the function Application.Nz() of Access.
 '
-' 2015-12-10. Gustav Brock, Cactus Data ApS, CPH.
+' Returns by default Empty if argument Value is Null and
+' no value for argument ValueIfNull is passed.
+'
+' 2020-10-13. Gustav Brock, Cactus Data ApS, CPH.
 '
 Public Function Nz( _
     ByRef Value As Variant, _
-    Optional ByRef ValueIfNull As Variant = "") _
+    Optional ByRef ValueIfNull = Empty) _
     As Variant
 
     Dim ValueNz     As Variant
-    
+
     If Not IsEmpty(Value) Then
         If IsNull(Value) Then
             ValueNz = ValueIfNull
@@ -49,4 +52,3 @@ Public Function Nz( _
     Nz = ValueNz
     
 End Function
-
