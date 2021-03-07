@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.1.2
+' CvrService v1.1.3
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -160,9 +160,19 @@ Public Function CvrLookup( _
     Optional VersionValue As CvrVersionSelect = CvrVersionSelect.Newest) _
     As Collection
 
+    ' Specify company name and project name in UserAgentOrg and UserAgentApp before calling
+    ' the CVR API service.
+    ' Build a UserAgent string that holds this info and, optionally, contact name and phone/e-mail:
+    '
+    '   Company - Project [- contact person [- contact phone or e-mail]]
+    '
+    ' Example:
+    '
+    '   "Contoso - CRM-system - Martin Mikkelsen +45 42424242"
+    '
     ' Application specific constants.
-    Const UserAgentOrg      As String = "Cactus Data ApS"  ' Your organisation.
-    Const UserAgentApp      As String = "Accesstest"       ' Your app name.
+    Const UserAgentOrg      As String = ""                  ' MUST fill in: Your organisation.
+    Const UserAgentApp      As String = ""                  ' MUST fill in: Your app name.
     
     ' API specific constants.
     Const Host              As String = "cvrapi.dk"         ' Do not change.
@@ -195,8 +205,15 @@ Public Function CvrLookup( _
     Dim Query               As String
     Dim ResponseText        As String
     Dim ErrorCode           As String
+    Dim IsUserAgent         As Boolean
     
-    If Trim(SearchValue) <> "" Then
+    If Trim(UserAgentOrg) <> "" And Trim(UserAgentApp) <> "" Then
+        IsUserAgent = True
+    Else
+        MsgBox "UserAgent info is missing in function CvrLookup.", vbCritical + vbOKOnly, "VBA.CVRAPI"
+    End If
+    
+    If IsUserAgent And Trim(SearchValue) <> "" Then
         
         If ValidateSearch(CountryValue, SearchKey, SearchValue, ErrorCode) = True Then
             SearchParamKey = CvrSearchKeyLabel(SearchKey)
