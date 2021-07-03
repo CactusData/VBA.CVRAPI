@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonService"
-' JsonService v1.1.2
+' JsonService v1.2.0
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -131,7 +131,9 @@ End Function
 Public Function RetrieveDataResponse( _
     ByVal ServiceUrl As String, _
     ByRef ResponseText As String, _
-    Optional ByVal UserAgent As String) _
+    Optional ByVal UserAgent As String, _
+    Optional ByVal UserName As String, _
+    Optional ByVal Password As String) _
     As Boolean
 
     ' ServiceUrl is expected to have URL encoded parameters.
@@ -157,13 +159,13 @@ Public Function RetrieveDataResponse( _
         UserAgent = DefaultUserAgent
     End If
     
-    XmlHttp.Open "GET", ServiceUrl, Async
+    XmlHttp.Open "GET", ServiceUrl, Async, UserName, Password
     XmlHttp.setRequestHeader "User-Agent", UserAgent
 
-    XmlHttp.send
+    XmlHttp.Send
 
     ResponseText = XmlHttp.ResponseText
-    Select Case XmlHttp.status
+    Select Case XmlHttp.Status
         Case StatusOk
             Result = True
         Case StatusNotFound
@@ -181,7 +183,7 @@ Public Function RetrieveDataResponse( _
         If ResponseText = "" Then
             ResponseText = XmlHttp.statusText
         End If
-        ResponseText = CStr(XmlHttp.status) & ":" & vbCrLf & ResponseText
+        ResponseText = CStr(XmlHttp.Status) & ":" & vbCrLf & ResponseText
     End If
     
     RetrieveDataResponse = Result
