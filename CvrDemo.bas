@@ -4,90 +4,38 @@ Option Explicit
 '
 ' Example functions for using CVRAPI at application level.
 
-' Basic second-level example function to retrieve company info from a vat number.
+' Basic top-level example function to retrieve a full set of data
+' typically from a search by VAT number or company name.
 '
-' Vat is searched.
-' If found, True is returned, Vat is returned cleaned, and other parameters are filled.
-' If not found, False is returned. Other parameters are left untouched.
+' Returns the UDT (User Defined Type) CvrVat.
 '
-' Example usage: See GetDkCompanyInfo().
+' Example:
+'   Dim CvrVatResult As CvrVat
+'   Dim Result       As Boolean
+'   CvrVatResult = GetCvrData(CvrSearchKey.CompanyName, "TheUniqueCompanyName", Result)
+' returns full info in CvrVatResult.
 '
-Public Function RetrieveCvrAddress( _
-    ByVal Country As CvrCountrySelect, _
-    ByRef VAT As String, _
-    ByRef Company As String, _
-    ByRef Address As String, _
-    ByRef PostalCode As String, _
-    ByRef City As String) _
-    As Boolean
+Public Function GetCvrData( _
+    ByVal SearchKey As CvrSearchKey, _
+    ByVal SearchValue As String, _
+    ByRef Result As Boolean, _
+    Optional ByVal CountryValue As CvrCountrySelect = CvrCountrySelect.Denmark) _
+    As CvrVat
 
     Dim DataCollection      As Collection
-    Dim Result              As Boolean
     Dim FullResult          As CvrVat
     
-    Set DataCollection = CvrLookup(Result, VatNo, VAT, Country)
+    Set DataCollection = CvrLookup(Result, SearchKey, SearchValue, CountryValue)
     
     If Result = True Then
         ' Success.
         ' Purify data.
         FullResult = FillType(DataCollection)
-        ' Return cleaned VAT number.
-        VAT = FullResult.VAT
-        ' Return info.
-        Company = FullResult.Name
-        Address = FullResult.Address
-        PostalCode = FullResult.ZipCode
-        City = FullResult.City
     End If
     
     Set DataCollection = Nothing
     
-    RetrieveCvrAddress = Result
-
-End Function
-
-' Basic second-level example function to retrieve vat number and address from company name.
-'
-' Company is searched.
-' If found, True is returned, Company is returned cleaned, and other parameters are filled.
-' If not found, False is returned. Other parameters are left untouched.
-'
-' LIMITATION:
-'   Company name must be unique as CVRAPI currently returns a first match only.
-'
-' Example usage: See GetDkVat().
-'
-Public Function RetrieveCvrVat( _
-    ByVal Country As CvrCountrySelect, _
-    ByRef VAT As String, _
-    ByRef Company As String, _
-    ByRef Address As String, _
-    ByRef PostalCode As String, _
-    ByRef City As String) _
-    As Boolean
-
-    Dim DataCollection      As Collection
-    Dim Result              As Boolean
-    Dim FullResult          As CvrVat
-    
-    Set DataCollection = CvrLookup(Result, CompanyName, Company, Country)
-    
-    If Result = True Then
-        ' Success.
-        ' Purify data.
-        FullResult = FillType(DataCollection)
-        ' Return cleaned VAT number.
-        VAT = FullResult.VAT
-        ' Return info.
-        Company = FullResult.Name
-        Address = FullResult.Address
-        PostalCode = FullResult.ZipCode
-        City = FullResult.City
-    End If
-    
-    Set DataCollection = Nothing
-    
-    RetrieveCvrVat = Result
+    GetCvrData = FullResult
 
 End Function
 
@@ -174,39 +122,90 @@ Public Function IsCvr( _
     
 End Function
 
-' Basic top-level example function to retrieve a full set of data
-' typically from a search by VAT number or company name.
+' Basic second-level example function to retrieve company info from a vat number.
 '
-' Returns the UDT (User Defined Type) CvrVat.
+' Vat is searched.
+' If found, True is returned, Vat is returned cleaned, and other parameters are filled.
+' If not found, False is returned. Other parameters are left untouched.
 '
-' Example:
-'   Dim CvrVatResult As CvrVat
-'   Dim Result       As Boolean
-'   CvrVatResult = GetCvrData(CvrSearchKey.CompanyName, "TheUniqueCompanyName", Result)
-' returns full info in CvrVatResult.
+' Example usage: See GetDkCompanyInfo().
 '
-Public Function GetCvrData( _
-    ByVal SearchKey As CvrSearchKey, _
-    ByVal SearchValue As String, _
-    ByRef Result As Boolean, _
-    Optional ByVal CountryValue As CvrCountrySelect = CvrCountrySelect.Denmark) _
-    As CvrVat
+Public Function RetrieveCvrAddress( _
+    ByVal Country As CvrCountrySelect, _
+    ByRef VAT As String, _
+    ByRef Company As String, _
+    ByRef Address As String, _
+    ByRef PostalCode As String, _
+    ByRef City As String) _
+    As Boolean
 
     Dim DataCollection      As Collection
+    Dim Result              As Boolean
     Dim FullResult          As CvrVat
     
-    Set DataCollection = CvrLookup(Result, SearchKey, SearchValue, CountryValue)
+    Set DataCollection = CvrLookup(Result, VatNo, VAT, Country)
     
     If Result = True Then
         ' Success.
         ' Purify data.
         FullResult = FillType(DataCollection)
+        ' Return cleaned VAT number.
+        VAT = FullResult.VAT
+        ' Return info.
+        Company = FullResult.Name
+        Address = FullResult.Address
+        PostalCode = FullResult.ZipCode
+        City = FullResult.City
     End If
     
     Set DataCollection = Nothing
     
-    GetCvrData = FullResult
+    RetrieveCvrAddress = Result
 
 End Function
 
+' Basic second-level example function to retrieve vat number and address from company name.
+'
+' Company is searched.
+' If found, True is returned, Company is returned cleaned, and other parameters are filled.
+' If not found, False is returned. Other parameters are left untouched.
+'
+' LIMITATION:
+'   Company name must be unique as CVRAPI currently returns a first match only.
+'
+' Example usage: See GetDkVat().
+'
+Public Function RetrieveCvrVat( _
+    ByVal Country As CvrCountrySelect, _
+    ByRef VAT As String, _
+    ByRef Company As String, _
+    ByRef Address As String, _
+    ByRef PostalCode As String, _
+    ByRef City As String) _
+    As Boolean
+
+    Dim DataCollection      As Collection
+    Dim Result              As Boolean
+    Dim FullResult          As CvrVat
+    
+    Set DataCollection = CvrLookup(Result, CompanyName, Company, Country)
+    
+    If Result = True Then
+        ' Success.
+        ' Purify data.
+        FullResult = FillType(DataCollection)
+        ' Return cleaned VAT number.
+        VAT = FullResult.VAT
+        ' Return info.
+        Company = FullResult.Name
+        Address = FullResult.Address
+        PostalCode = FullResult.ZipCode
+        City = FullResult.City
+    End If
+    
+    Set DataCollection = Nothing
+    
+    RetrieveCvrVat = Result
+
+End Function
 

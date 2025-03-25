@@ -1,5 +1,5 @@
 Attribute VB_Name = "JsonScript"
-' JsonScript v1.2.1
+' JsonScript v1.2.2
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -20,6 +20,83 @@ Option Explicit
 
 ' Script engine to run JavaScript (Microsoft JScript).
 Private ScriptEngine        As Object
+
+' URL decode a Json string.
+'
+Public Function DecodeJsonString(ByVal JSonString As String) As Object
+
+    Call InitiateScriptEngine
+    
+    If Not ScriptEngine Is Nothing Then
+        Set DecodeJsonString = ScriptEngine.Eval("(" + JSonString + ")")
+    End If
+
+End Function
+
+' URL Encode a string.
+'
+Public Function EncodeUrl( _
+    ByVal PlainString As String) _
+    As String
+    
+    Dim EncodedString       As String
+    
+    Call InitiateScriptEngine
+    
+    If Not ScriptEngine Is Nothing Then
+        EncodedString = ScriptEngine.Run("encode", PlainString)
+    End If
+    
+    EncodeUrl = EncodedString
+
+End Function
+
+' Get the keys of a Json object.
+'
+Public Function GetKeys( _
+    ByVal JsonObject As Object) _
+    As String()
+
+    Dim KeysObject  As Object
+    
+    Dim Keys()      As String
+    Dim Length      As Integer
+
+    If Not ScriptEngine Is Nothing Then
+        Set KeysObject = ScriptEngine.Run("getKeys", JsonObject)
+    
+        Length = GetProperty(KeysObject, "length")
+        If Length > 0 Then
+            ReDim Keys(Length - 1)
+        End If
+    
+        ' KeysObject is just a comma separated string ...
+        Keys = Split(KeysObject, ",")
+    End If
+    
+    GetKeys = Keys
+
+End Function
+
+' Get a property as an object by name.
+'
+Public Function GetObjectProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Object
+
+    If Not ScriptEngine Is Nothing Then
+        Set GetObjectProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
+    End If
+
+End Function
+
+' Get a property by name.
+'
+Public Function GetProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Variant
+
+    If Not ScriptEngine Is Nothing Then
+        GetProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
+    End If
+
+End Function
 
 ' Initialize the engine.
 '
@@ -59,71 +136,4 @@ Public Sub TerminateScriptEngine()
     Set ScriptEngine = Nothing
     
 End Sub
-
-' Get the keys of a Json object.
-'
-Public Function GetKeys( _
-    ByVal JsonObject As Object) _
-    As String()
-
-    Dim KeysObject  As Object
-    
-    Dim Keys()      As String
-    Dim Length      As Integer
-
-    Set KeysObject = ScriptEngine.Run("getKeys", JsonObject)
-
-    Length = GetProperty(KeysObject, "length")
-    If Length > 0 Then
-        ReDim Keys(Length - 1)
-    End If
-
-    ' KeysObject is just a comma separated string ...
-    Keys = Split(KeysObject, ",")
-
-    GetKeys = Keys
-
-End Function
-
-' Get a property by name.
-'
-Public Function GetProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Variant
-
-    GetProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
-
-End Function
-
-' Get a property as an object by name.
-'
-Public Function GetObjectProperty(ByVal JsonObject As Object, ByVal PropertyName As String) As Object
-
-    Set GetObjectProperty = ScriptEngine.Run("getProperty", JsonObject, PropertyName)
-
-End Function
-
-' URL Encode a string.
-'
-Public Function EncodeUrl( _
-    ByVal PlainString As String) _
-    As String
-    
-    Dim EncodedString       As String
-    
-    Call InitiateScriptEngine
-    
-    EncodedString = ScriptEngine.Run("encode", PlainString)
-    
-    EncodeUrl = EncodedString
-
-End Function
-
-' URL decode a Json string.
-'
-Public Function DecodeJsonString(ByVal JSonString As String) As Object
-
-    Call InitiateScriptEngine
-    
-    Set DecodeJsonString = ScriptEngine.Eval("(" + JSonString + ")")
-
-End Function
 

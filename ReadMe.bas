@@ -1,5 +1,5 @@
 Attribute VB_Name = "ReadMe"
-' VBA CVRAPI v1.2.3
+' VBA CVRAPI v1.2.5
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -9,9 +9,15 @@ Attribute VB_Name = "ReadMe"
 '
 ' As a minimum, these modules are needed:
 '   CvrService
+'   JsonBase
 '   JsonCollection
 '   JsonScript
 '   JsonService
+'
+' Required script control:
+'   32-bit VBA: Presence of "Microsoft Script Control 1.0"
+'   64-bit VBA: Install of third-party script control "Tablacus Script Control 64"
+'               https://tablacus.github.io/scriptcontrol_en.html
 '
 ' Also, in function CvrLookup, don't forget to adjust the default
 ' application specific constants:
@@ -55,3 +61,4 @@ Attribute VB_Name = "ReadMe"
 '            which also corrected a bug that caused an error if "owners" was null.
 '            CvrService: Wrapped TypeVat.Creditbankrupt value in Nz() to prevent error if value was null.
 ' 2018-06-01 Removed unused variables.
+' 2025-03-25 Reorganised functions.

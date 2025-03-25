@@ -17,6 +17,7 @@ Tested with Microsoft Access/Excel 2016 and 365, 32- and 64-bit, but should work
 As a minimum, these modules are needed:
 
 *    CvrService 
+*    JsonBase
 *    JsonCollection 
 *    JsonScript 
 *    JsonService
@@ -50,4 +51,4 @@ For *64-bit VBA*, a third-party dll, [*Tablacus Script Control 64*](https://tabl
 ### Implementation ###
 In most cases, an application will need functions like the example functions found in module CvrDemo.
 
-2021-03-07.
+2025-03-25.

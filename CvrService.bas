@@ -138,6 +138,220 @@ End Type
 ' Modulus 11 check digit calculation.
 Private Const PNumberOldMax     As Double = 1006959421
 
+' Cleans and returns a numeric string if only valid characters are met.
+' Returns an empty string if non-valid characters are located.
+'
+' Example:
+'   CleanSearchValue(CvrSearchKey.PhoneNumber, "(12) 33.23-98") returns:
+'   "12332398"
+'
+Private Sub CleanSearchValue( _
+    ByVal SearchKey As CvrSearchKey, _
+    ByRef SearchValue As String)
+    
+    Dim Index               As Integer
+    Dim Digit               As String
+    Dim Digits              As Integer
+    Dim CleanValue          As String
+    Dim ValueLength         As Integer
+    
+    Select Case SearchKey
+        Case CvrSearchKey.GeneralSearch, CvrSearchKey.CompanyName
+            SearchValue = Trim(SearchValue)
+            
+        Case CvrSearchKey.PhoneNumber, CvrSearchKey.Productionunit, CvrSearchKey.VatNo
+            ValueLength = Len(SearchValue)
+            CleanValue = Space(ValueLength)
+            
+            For Index = 1 To ValueLength
+                Digit = Mid(SearchValue, Index, 1)
+                Select Case Asc(Digit)
+                    Case 32 To 47
+                        ' Special characters allowed but ignored.
+                    Case 48 To 57
+                        If Digit = "0" And Digits = 0 Then
+                            ' Leading zero(es) not allowed.
+                            Exit For
+                        Else
+                            ' Insert found digit.
+                            Digits = Digits + 1
+                            Mid(CleanValue, Digits) = Digit
+                        End If
+                    Case Else
+                        ' Only digits and special characters allowed.
+                        CleanValue = ""
+                        Exit For
+                End Select
+            Next
+            
+            SearchValue = RTrim(CleanValue)
+    End Select
+    
+End Sub
+
+' Converts CVR DK legacy ("Grandma") string date to Date value (in a Variant).
+' For empty or invalid CvrDate, Null is returned.
+'
+' Example:
+'   "01/03 - 1988" -> #1988-03-01#
+'
+Public Function ConvertCvrDate( _
+    ByVal CvrDate As String) _
+    As Variant
+    
+    Dim DateMonth           As String
+    Dim Year                As Integer
+    Dim Month               As Integer
+    Dim Day                 As Integer
+    Dim TrueDate            As Variant
+    
+    If IsDate(CvrDate) Then
+        DateMonth = Split(CvrDate, "-")(0)
+        Year = CInt(Split(CvrDate, "-")(1))
+        Month = CInt(Split(DateMonth, "/")(1))
+        Day = CInt(Split(DateMonth, "/")(0))
+        TrueDate = DateSerial(Year, Month, Day)
+    Else
+        TrueDate = Null
+    End If
+    
+    ConvertCvrDate = TrueDate
+
+End Function
+
+' Returns name of key for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrCountryKeyLabel( _
+    ByVal CvrKey As CvrCountryKey) _
+    As String
+    
+    Dim Labels()            As Variant
+    
+    Labels() = Array("country")
+
+    CvrCountryKeyLabel = Labels(CvrKey)
+
+End Function
+
+' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrCountryValue( _
+    ByVal CvrKey As CvrCountrySelect) _
+    As String
+    
+    Dim Values()            As Variant
+    
+    Values() = Array("dk", "no")
+
+    CvrCountryValue = Values(CvrKey)
+
+End Function
+
+' Creates a collection with an error message as if this was received from CVRAPI
+' using (optionally) the error code supplied in parameter ErrorCode.
+'
+Private Function CvrError( _
+    Optional ByVal ErrorCode As String, _
+    Optional ByVal VersionValue As CvrVersionSelect = CvrVersionSelect.Newest) _
+    As Collection
+    
+    Const ErrorUnknown      As String = "UNKNOWN"
+    Const TValue            As Integer = 0
+    Const VersionCurrent    As Integer = CvrVersionSelect.Version6
+    Const ResponseBase      As String = "{'error': '{0}','t': {1},'version': {2}}"
+    
+    Dim ResponseText        As String
+    
+    If ErrorCode = "" Then
+        ErrorCode = ErrorUnknown
+    End If
+    If VersionValue = CvrVersionSelect.Newest Then
+        VersionValue = VersionCurrent
+    End If
+    
+    ' Build pseudo ResponseText to mimic an error response.
+    ' Example:
+    '   {"error": "INVALID_PNO","t": 0,"version": 6}
+    ResponseText = Replace(ResponseBase, "'", Chr(34))
+    ResponseText = Replace(ResponseText, "{0}", ErrorCode)
+    ResponseText = Replace(ResponseText, "{1}", TValue)
+    ResponseText = Replace(ResponseText, "{2}", VersionValue)
+    
+    ' Convert ResponseText to a collection.
+    Set CvrError = CollectJson(ResponseText)
+    
+End Function
+
+' Returns a friendly (long) error message matching an error code.
+' Accepts some local error codes in addition to the CVRAPI error codes.
+'
+' Example:
+'   Error code "NOT_FOUND" -> "Nothing matched the search criteria."
+'
+Public Function CvrErrorText( _
+    ByVal ErrorCode As String) _
+    As String
+    
+    Dim FriendlyError       As String
+    
+    ' CVRAPI error codes.
+    ' NO_SEARCH     ' No useful search criteria was supplied.
+    ' BANNED        ' Your IP address or IP range has been blocked. Stop further attempts.
+    ' INVALID_VAT   ' Invalid VAT number or wrong format.
+    ' NOT_FOUND     ' Nothing matched the search criteria.
+    ' Local error codes.
+    ' INVALID_PHN   ' Invalid phone number or wrong format.
+    ' INVALID_PNO   ' Invalid Production Unit number or wrong format.
+    
+    Select Case ErrorCode
+        Case "NO_SEARCH"
+            FriendlyError = "No useful search criteria was supplied."
+        Case "BANNED"
+            FriendlyError = "Your IP address or IP range has been blocked. Stop further attempts."
+        Case "INVALID_VAT"
+            FriendlyError = "Invalid VAT number or wrong format."
+        Case "NOT_FOUND"
+            FriendlyError = "Nothing matched the search criteria."
+        Case "INVALID_PNO"
+            FriendlyError = "Invalid Production Unit number or wrong format."
+        Case "INVALID_PHN"
+            FriendlyError = "Invalid phone number or wrong format."
+        Case Else
+            FriendlyError = "Unspecified search error."
+    End Select
+    
+    CvrErrorText = FriendlyError
+    
+End Function
+
+' Returns name of key for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrFormatKeyLabel( _
+    ByVal CvrKey As CvrFormatKey) _
+    As String
+    
+    Dim Labels()            As Variant
+    
+    Labels() = Array("format")
+
+    CvrFormatKeyLabel = Labels(CvrKey)
+
+End Function
+
+' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrFormatValue( _
+    ByVal CvrKey As CvrFormatSelect) _
+    As String
+    
+    Dim Values()            As Variant
+    
+    Values() = Array("json", "xml")
+
+    CvrFormatValue = Values(CvrKey)
+
+End Function
+
 ' Main function for searching the CVRAPI.
 ' Result returns success or error as True or False.
 '
@@ -203,7 +417,6 @@ Public Function CvrLookup( _
     
     Dim ServiceUrl          As String
     Dim Query               As String
-    Dim ResponseText        As String
     Dim ErrorCode           As String
     Dim IsUserAgent         As Boolean
     
@@ -266,6 +479,75 @@ Public Function CvrLookup( _
     
 End Function
 
+' Private functions.
+
+
+' Returns name of key for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrSearchKeyLabel( _
+    ByVal CvrKey As CvrSearchKey) _
+    As String
+    
+    Dim Labels()            As Variant
+    
+    Labels() = Array("search", "vat", "name", "produ", "phone")
+
+    CvrSearchKeyLabel = Labels(CvrKey)
+
+End Function
+
+' Returns name of key for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrVersionKeyLabel( _
+    ByVal CvrKey As CvrVersionKey) _
+    As String
+    
+    Dim Labels()            As Variant
+    
+    Labels() = Array("version")
+
+    CvrVersionKeyLabel = Labels(CvrKey)
+
+End Function
+
+' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
+'
+Private Function CvrVersionValue( _
+    ByVal CvrKey As CvrVersionSelect) _
+    As String
+    
+    Dim VersionValue        As String
+    
+'    ' 2015-12-10.
+'    ' Value 0 is now valid but does NOT return the newest version.
+'
+'    If CvrKey = Newest Then
+'        ' Value 0 of Newest is not a valid parameter value.
+'        ' Return an empty string.
+'    Else
+'        VersionValue = CStr(CvrKey)
+'    End If
+
+    ' Verify version.
+    Select Case CvrKey
+        ' Allowed versions.
+        Case Newest
+            ' Change to newest version as expected.
+            CvrKey = Version6
+        Case Version4
+        Case Version5
+        Case Version6
+        Case Else
+            ' Change disallowed versions to newest.
+            CvrKey = Version6
+    End Select
+    
+    VersionValue = CStr(CvrKey)
+    
+    CvrVersionValue = VersionValue
+
+End Function
+
 ' Converts an error collection to user defined type CvrError.
 '
 Public Function FillError( _
@@ -299,6 +581,69 @@ Public Function FillError( _
     
     FillError = TypeError
     
+End Function
+
+' Converts and cleans one item of a full collection to user defined type CvrVat.
+'
+Public Function FillType( _
+    ByVal DataCollection As Collection) _
+    As CvrVat
+    
+    Dim Item                As Integer
+    Dim Items               As Integer
+    Dim RootItem            As Integer
+    Dim TypeVat             As CvrVat
+    
+    ' Fill user defined type.
+    ' Find first active organisation/company.
+    ' Note: Currently CVRAPI always returns one company only.
+    Items = DataCollection.Count
+    For Item = 1 To Items
+        If IsNull(DataCollection(Item)(CollectionItem.Data).Item("enddate")(CollectionItem.Data)) Then
+            Exit For
+        End If
+    Next
+    If Item > Items Then
+        ' No active company found.
+        ' Select the first.
+        Item = 1
+    End If
+    RootItem = Item
+    TypeVat = FillTypeVat(DataCollection(RootItem)(CollectionItem.Data))
+    
+    ' Fill user defined sub types.
+    ' Find main production unit.
+    If IsNull(DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data)) Then
+        ' No production units.
+        ' Should not happen.
+    Else
+        Items = DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data).Count
+        For Item = 1 To Items
+            If DataCollection(RootItem)(CollectionItem.Data).Item("productionunits")(CollectionItem.Data).Item(Item)(CollectionItem.Data)("main")(CollectionItem.Data) = True Then
+                Exit For
+            End If
+        Next
+        If Item > Items Then
+            ' No main production unit found.
+            ' Select the first.
+            Item = 1
+        End If
+        TypeVat.Productionunit = FillTypeProductionunit(DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data).Item(Item)(CollectionItem.Data))
+    End If
+    
+    ' Find owner(s).
+    If IsNull(DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data)) Then
+        ' No owners registered yet.
+        ' May happen.
+    Else
+        Items = DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data).Count
+        ' Select the first owner.
+        Item = 1
+        TypeVat.Owner = FillTypeOwner(DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data).Item(Item)(CollectionItem.Data))
+    End If
+    
+    FillType = TypeVat
+
 End Function
 
 ' Converts and cleans one item of a sub collection to user defined type CvrOwner.
@@ -465,101 +810,6 @@ Public Function FillTypeVat( _
 
 End Function
 
-' Converts and cleans one item of a full collection to user defined type CvrVat.
-'
-Public Function FillType( _
-    ByVal DataCollection As Collection) _
-    As CvrVat
-    
-    Dim FieldName           As String
-    Dim FieldValue          As Variant
-    Dim Item                As Integer
-    Dim Items               As Integer
-    Dim RootItem            As Integer
-    Dim TypeVat             As CvrVat
-    
-    ' Fill user defined type.
-    ' Find first active organisation/company.
-    ' Note: Currently CVRAPI always returns one company only.
-    Items = DataCollection.Count
-    For Item = 1 To Items
-        If IsNull(DataCollection(Item)(CollectionItem.Data).Item("enddate")(CollectionItem.Data)) Then
-            Exit For
-        End If
-    Next
-    If Item > Items Then
-        ' No active company found.
-        ' Select the first.
-        Item = 1
-    End If
-    RootItem = Item
-    TypeVat = FillTypeVat(DataCollection(RootItem)(CollectionItem.Data))
-    
-    ' Fill user defined sub types.
-    ' Find main production unit.
-    If IsNull(DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data)) Then
-        ' No production units.
-        ' Should not happen.
-    Else
-        Items = DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data).Count
-        For Item = 1 To Items
-            If DataCollection(RootItem)(CollectionItem.Data).Item("productionunits")(CollectionItem.Data).Item(Item)(CollectionItem.Data)("main")(CollectionItem.Data) = True Then
-                Exit For
-            End If
-        Next
-        If Item > Items Then
-            ' No main production unit found.
-            ' Select the first.
-            Item = 1
-        End If
-        TypeVat.Productionunit = FillTypeProductionunit(DataCollection(RootItem)(CollectionItem.Data)("productionunits")(CollectionItem.Data).Item(Item)(CollectionItem.Data))
-    End If
-    
-    ' Find owner(s).
-    If IsNull(DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data)) Then
-        ' No owners registered yet.
-        ' May happen.
-    Else
-        Items = DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data).Count
-        ' Select the first owner.
-        Item = 1
-        TypeVat.Owner = FillTypeOwner(DataCollection(RootItem)(CollectionItem.Data)("owners")(CollectionItem.Data).Item(Item)(CollectionItem.Data))
-    End If
-    
-    FillType = TypeVat
-
-End Function
-
-' Converts CVR DK legacy ("Grandma") string date to Date value (in a Variant).
-' For empty or invalid CvrDate, Null is returned.
-'
-' Example:
-'   "01/03 - 1988" -> #1988-03-01#
-'
-Public Function ConvertCvrDate( _
-    ByVal CvrDate As String) _
-    As Variant
-    
-    Dim DateMonth           As String
-    Dim Year                As Integer
-    Dim Month               As Integer
-    Dim Day                 As Integer
-    Dim TrueDate            As Variant
-    
-    If IsDate(CvrDate) Then
-        DateMonth = Split(CvrDate, "-")(0)
-        Year = CInt(Split(CvrDate, "-")(1))
-        Month = CInt(Split(DateMonth, "/")(1))
-        Day = CInt(Split(DateMonth, "/")(0))
-        TrueDate = DateSerial(Year, Month, Day)
-    Else
-        TrueDate = Null
-    End If
-    
-    ConvertCvrDate = TrueDate
-
-End Function
-
 ' Converts a name to general proper case leaving the company type abreviation intact.
 '
 ' Note: Often company and city names are received in uppercase only.
@@ -592,224 +842,6 @@ Public Function FormatCompany( _
     FormatCompany = ProperCompany
     
 End Function
-
-' Returns a friendly (long) error message matching an error code.
-' Accepts some local error codes in addition to the CVRAPI error codes.
-'
-' Example:
-'   Error code "NOT_FOUND" -> "Nothing matched the search criteria."
-'
-Public Function CvrErrorText( _
-    ByVal ErrorCode As String) _
-    As String
-    
-    Dim FriendlyError       As String
-    
-    ' CVRAPI error codes.
-    ' NO_SEARCH     ' No useful search criteria was supplied.
-    ' BANNED        ' Your IP address or IP range has been blocked. Stop further attempts.
-    ' INVALID_VAT   ' Invalid VAT number or wrong format.
-    ' NOT_FOUND     ' Nothing matched the search criteria.
-    ' Local error codes.
-    ' INVALID_PHN   ' Invalid phone number or wrong format.
-    ' INVALID_PNO   ' Invalid Production Unit number or wrong format.
-    
-    Select Case ErrorCode
-        Case "NO_SEARCH"
-            FriendlyError = "No useful search criteria was supplied."
-        Case "BANNED"
-            FriendlyError = "Your IP address or IP range has been blocked. Stop further attempts."
-        Case "INVALID_VAT"
-            FriendlyError = "Invalid VAT number or wrong format."
-        Case "NOT_FOUND"
-            FriendlyError = "Nothing matched the search criteria."
-        Case "INVALID_PNO"
-            FriendlyError = "Invalid Production Unit number or wrong format."
-        Case "INVALID_PHN"
-            FriendlyError = "Invalid phone number or wrong format."
-        Case Else
-            FriendlyError = "Unspecified search error."
-    End Select
-    
-    CvrErrorText = FriendlyError
-    
-End Function
-
-' Private functions.
-
-
-' Returns name of key for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrSearchKeyLabel( _
-    ByVal CvrKey As CvrSearchKey) _
-    As String
-    
-    Dim Labels()            As Variant
-    
-    Labels() = Array("search", "vat", "name", "produ", "phone")
-
-    CvrSearchKeyLabel = Labels(CvrKey)
-
-End Function
-
-' Returns name of key for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrCountryKeyLabel( _
-    ByVal CvrKey As CvrCountryKey) _
-    As String
-    
-    Dim Labels()            As Variant
-    
-    Labels() = Array("country")
-
-    CvrCountryKeyLabel = Labels(CvrKey)
-
-End Function
-
-' Returns name of key for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrFormatKeyLabel( _
-    ByVal CvrKey As CvrFormatKey) _
-    As String
-    
-    Dim Labels()            As Variant
-    
-    Labels() = Array("format")
-
-    CvrFormatKeyLabel = Labels(CvrKey)
-
-End Function
-
-' Returns name of key for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrVersionKeyLabel( _
-    ByVal CvrKey As CvrVersionKey) _
-    As String
-    
-    Dim Labels()            As Variant
-    
-    Labels() = Array("version")
-
-    CvrVersionKeyLabel = Labels(CvrKey)
-
-End Function
-
-' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrCountryValue( _
-    ByVal CvrKey As CvrCountrySelect) _
-    As String
-    
-    Dim Values()            As Variant
-    
-    Values() = Array("dk", "no")
-
-    CvrCountryValue = Values(CvrKey)
-
-End Function
-
-' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrFormatValue( _
-    ByVal CvrKey As CvrFormatSelect) _
-    As String
-    
-    Dim Values()            As Variant
-    
-    Values() = Array("json", "xml")
-
-    CvrFormatValue = Values(CvrKey)
-
-End Function
-
-' Returns spelled out value for key/value pair of query parameter to search CVRAPI.
-'
-Private Function CvrVersionValue( _
-    ByVal CvrKey As CvrVersionSelect) _
-    As String
-    
-    Dim VersionValue        As String
-    
-'    ' 2015-12-10.
-'    ' Value 0 is now valid but does NOT return the newest version.
-'
-'    If CvrKey = Newest Then
-'        ' Value 0 of Newest is not a valid parameter value.
-'        ' Return an empty string.
-'    Else
-'        VersionValue = CStr(CvrKey)
-'    End If
-
-    ' Verify version.
-    Select Case CvrKey
-        ' Allowed versions.
-        Case Newest
-            ' Change to newest version as expected.
-            CvrKey = Version6
-        Case Version4
-        Case Version5
-        Case Version6
-        Case Else
-            ' Change disallowed versions to newest.
-            CvrKey = Version6
-    End Select
-    
-    VersionValue = CStr(CvrKey)
-    
-    CvrVersionValue = VersionValue
-
-End Function
-
-' Cleans and returns a numeric string if only valid characters are met.
-' Returns an empty string if non-valid characters are located.
-'
-' Example:
-'   CleanSearchValue(CvrSearchKey.PhoneNumber, "(12) 33.23-98") returns:
-'   "12332398"
-'
-Private Sub CleanSearchValue( _
-    ByVal SearchKey As CvrSearchKey, _
-    ByRef SearchValue As String)
-    
-    Dim Index               As Integer
-    Dim Digit               As String
-    Dim Digits              As Integer
-    Dim CleanValue          As String
-    Dim ValueLength         As Integer
-    
-    Select Case SearchKey
-        Case CvrSearchKey.GeneralSearch, CvrSearchKey.CompanyName
-            SearchValue = Trim(SearchValue)
-            
-        Case CvrSearchKey.PhoneNumber, CvrSearchKey.Productionunit, CvrSearchKey.VatNo
-            ValueLength = Len(SearchValue)
-            CleanValue = Space(ValueLength)
-            
-            For Index = 1 To ValueLength
-                Digit = Mid(SearchValue, Index, 1)
-                Select Case Asc(Digit)
-                    Case 32 To 47
-                        ' Special characters allowed but ignored.
-                    Case 48 To 57
-                        If Digit = "0" And Digits = 0 Then
-                            ' Leading zero(es) not allowed.
-                            Exit For
-                        Else
-                            ' Insert found digit.
-                            Digits = Digits + 1
-                            Mid(CleanValue, Digits) = Digit
-                        End If
-                    Case Else
-                        ' Only digits and special characters allowed.
-                        CleanValue = ""
-                        Exit For
-                End Select
-            Next
-            
-            SearchValue = RTrim(CleanValue)
-    End Select
-    
-End Sub
 
 ' Checks if Number passes a Modulus 11 check.
 ' Returns True if passed.
@@ -935,40 +967,5 @@ Private Function ValidateSearch( _
     
     ValidateSearch = Result
 
-End Function
-
-' Creates a collection with an error message as if this was received from CVRAPI
-' using (optionally) the error code supplied in parameter ErrorCode.
-'
-Private Function CvrError( _
-    Optional ByVal ErrorCode As String, _
-    Optional ByVal VersionValue As CvrVersionSelect = CvrVersionSelect.Newest) _
-    As Collection
-    
-    Const ErrorUnknown      As String = "UNKNOWN"
-    Const TValue            As Integer = 0
-    Const VersionCurrent    As Integer = CvrVersionSelect.Version6
-    Const ResponseBase      As String = "{'error': '{0}','t': {1},'version': {2}}"
-    
-    Dim ResponseText        As String
-    
-    If ErrorCode = "" Then
-        ErrorCode = ErrorUnknown
-    End If
-    If VersionValue = CvrVersionSelect.Newest Then
-        VersionValue = VersionCurrent
-    End If
-    
-    ' Build pseudo ResponseText to mimic an error response.
-    ' Example:
-    '   {"error": "INVALID_PNO","t": 0,"version": 6}
-    ResponseText = Replace(ResponseBase, "'", Chr(34))
-    ResponseText = Replace(ResponseText, "{0}", ErrorCode)
-    ResponseText = Replace(ResponseText, "{1}", TValue)
-    ResponseText = Replace(ResponseText, "{2}", VersionValue)
-    
-    ' Convert ResponseText to a collection.
-    Set CvrError = CollectJson(ResponseText)
-    
 End Function
 
