@@ -1,5 +1,5 @@
 Attribute VB_Name = "CvrService"
-' CvrService v1.1.3
+' CvrService v1.1.4
 ' (c) Gustav Brock, Cactus Data ApS, CPH
 ' https://github.com/CactusData/VBA.CVRAPI
 '
@@ -389,6 +389,7 @@ Public Function CvrLookup( _
     Const UserAgentApp      As String = ""                  ' MUST fill in: Your app name.
     
     ' API specific constants.
+    Const Scheme            As String = "https"             ' http is accepted.
     Const Host              As String = "cvrapi.dk"         ' Do not change.
     Const Path              As String = "api"               ' Do not change.
     Const UserAgent         As String = UserAgentOrg & " - " & UserAgentApp
@@ -417,6 +418,7 @@ Public Function CvrLookup( _
     
     Dim ServiceUrl          As String
     Dim Query               As String
+    
     Dim ErrorCode           As String
     Dim IsUserAgent         As Boolean
     
@@ -446,13 +448,13 @@ Public Function CvrLookup( _
                 BuildUrlQueryParameter(CountryParamKey, CountryParamVal), _
                 BuildUrlQueryParameter(FormatParamKey, FormatParamVal), _
                 BuildUrlQueryParameter(VersionParamKey, VersionParamVal))
-            ServiceUrl = BuildServiceUrl(, Host, Path, Query)
+            ServiceUrl = BuildServiceUrl(Scheme, Host, Path, Query)
             ' Retrieve data.
             Set DataCollection = RetrieveDataCollection(ServiceUrl, UserAgent)
             If DataCollection Is Nothing Then
                 ' CVRAPI service is not available.
                 ' Has your IP been blocked?
-            Else
+            ElseIf DataCollection.Count > 0 Then
                 If DataCollection(RootItem)(CollectionItem.Data).Count > ErrorItems Then
                     Result = True
                 Else
@@ -588,7 +590,7 @@ End Function
 Public Function FillType( _
     ByVal DataCollection As Collection) _
     As CvrVat
-    
+        
     Dim Item                As Integer
     Dim Items               As Integer
     Dim RootItem            As Integer

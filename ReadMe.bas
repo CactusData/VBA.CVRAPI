@@ -62,3 +62,4 @@ Attribute VB_Name = "ReadMe"
 '            CvrService: Wrapped TypeVat.Creditbankrupt value in Nz() to prevent error if value was null.
 ' 2018-06-01 Removed unused variables.
 ' 2025-03-25 Reorganised functions.
+' 2025-04-23 Improved error handling.
